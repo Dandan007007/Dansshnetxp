@@ -1,0 +1,47 @@
+#!/bin/bash
+# INSTALADOR CLIENTE DANSSH PRO
+# ACESSO EXCLUSIVO - LICENÇA VENDA
+# USUÁRIO: Dandandan0307 | REPOSITÓRIO: Dansshnetxp
+
+# 🔑 CHAVE DE ACESSO - VOCÊ PODE MUDAR QUANDO QUISER
+CHAVE_VIP="DANSSH-VIP-777-2026"
+
+# CORES PARA FICAR BONITO
+VERDE='\033[1;32m'
+VERMELHO='\033[1;31m'
+AZUL='\033[1;34m'
+RESET='\033[0m'
+
+# VERIFICA SE ESTÁ COMO ROOT
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${VERMELHO}❌ ERRO: Execute esse comando como ROOT!${RESET}"
+    exit 1
+fi
+
+# TELA DE LOGIN
+clear
+echo -e "${AZUL}=============================================${RESET}"
+echo -e "${VERDE}🔑 PAINEL DANSSH - ACESSO VIP${RESET}"
+echo -e "${AZUL}=============================================${RESET}"
+read -p "Digite sua CHAVE DE ACESSO: " CHAVE_DIGITADA
+
+# VALIDAÇÃO DA CHAVE
+if [ "$CHAVE_DIGITADA" != "$CHAVE_VIP" ]; then
+    echo -e "${VERMELHO}❌ CHAVE INVÁLIDA! ACESSO NEGADO!${RESET}"
+    exit 1
+fi
+
+echo -e "${VERDE}✅ CHAVE CORRETA! BAIXANDO SISTEMA...${RESET}"
+sleep 1.5
+
+# ✅ LINK CERTO COM SEU USUÁRIO E REPOSITÓRIO (NÃO MEXA AQUI)
+curl -s -o /usr/local/bin/danssh https://raw.githubusercontent.com/Dandandan0307/Dansshnetxp/main/sistema-completo.sh
+chmod +x /usr/local/bin/danssh
+cp /usr/local/bin/danssh /bin/danssh
+chmod +x /bin/danssh
+
+echo -e "${VERDE}✅ INSTALADO COM SUCESSO! ABRINDO PAINEL...${RESET}"
+sleep 1
+
+# ABRE O PAINEL DIRETO
+exec danssh
