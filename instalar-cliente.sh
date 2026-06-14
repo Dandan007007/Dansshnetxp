@@ -1,0 +1,63 @@
+#!/bin/bash
+# INSTALADOR CLIENTE DANSSH BUNNY PRO
+# ACESSO EXCLUSIVO - LICENÇA VINCULADA POR IP + CHAVE
+# USUÁRIO: Dandandan0307 | REPOSITÓRIO: Dansshnetxp
+
+# 🔐 DADOS DO CLIENTE (NÃO ALTERE SE NÃO SOUBER)
+CHAVE_VIP="DANSSH-CLIENTE-001"
+IP_LIBERADO="143.14.79.48"
+
+# CORES DO SISTEMA
+ROSA='\033[1;35m'
+CIANO='\033[1;36m'
+VERDE='\033[1;32m'
+VERMELHO='\033[1;31m'
+RESET='\033[0m'
+
+# VERIFICA SE ESTÁ COMO ROOT
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${VERMELHO}❌ ERRO: Execute esse comando como ROOT!${RESET}"
+    exit 1
+fi
+
+# PEGA O IP ATUAL DA VPS
+IP_ATUAL=$(hostname -I | awk '{print $1}')
+
+# TELA DE LOGIN
+clear
+echo -e "${ROSA}=============================================${RESET}"
+echo -e "${CIANO}🐇 𝐃𝐀𝐍𝐒𝐒𝐇 𝐁𝐔𝐍𝐍𝐘 𝐏𝐑𝐎 🐇${RESET}"
+echo -e "${ROSA}🔑 ACESSO EXCLUSIVO VIP${RESET}"
+echo -e "${ROSA}=============================================${RESET}"
+read -p "Digite sua CHAVE DE ACESSO: " CHAVE_DIGITADA
+
+# VALIDAÇÃO DA CHAVE
+if [ "$CHAVE_DIGITADA" != "$CHAVE_VIP" ]; then
+    echo -e "${VERMELHO}❌ CHAVE INVÁLIDA! ACESSO NEGADO!${RESET}"
+    exit 1
+fi
+
+# VALIDAÇÃO DO IP (SÓ FUNCIONA NO IP LIBERADO)
+if [ "$IP_ATUAL" != "$IP_LIBERADO" ]; then
+    echo -e "${VERMELHO}❌ VPS NÃO AUTORIZADA!${RESET}"
+    echo -e "${VERMELHO}🔒 ESSE ACESSO SÓ FUNCIONA NO IP: $IP_LIBERADO${RESET}"
+    exit 1
+fi
+
+echo -e "${VERDE}✅ AUTORIZADO! BAIXANDO SISTEMA...${RESET}"
+sleep 1.5
+
+# BAIXA O SISTEMA PRINCIPAL DO GITHUB
+curl -s -o /usr/local/bin/danssh https://raw.githubusercontent.com/Dandandan0307/Dansshnetxp/main/sistema-completo.sh
+chmod +x /usr/local/bin/danssh
+cp /usr/local/bin/danssh /bin/danssh
+chmod +x /bin/danssh
+
+echo -e "${VERDE}✅ INSTALADO COM SUCESSO!${RESET}"
+echo -e "${CIANO}🐇 SISTEMA: 𝐃𝐀𝐍𝐒𝐒𝐇 𝐁𝐔𝐍𝐍𝐘 𝐏𝐑𝐎 🐇${RESET}"
+echo -e "${CIANO}🔒 LICENÇA VINCULADA AO IP: $IP_ATUAL${RESET}"
+sleep 1
+
+# ABRE O PAINEL DIRETO
+exec danssh
+
