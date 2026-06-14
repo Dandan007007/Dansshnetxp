@@ -1,58 +1,302 @@
 #!/bin/bash
-# INSTALADOR CLIENTE DANSSH PRO - VERSÃO SEGURA
-# ACESSO EXCLUSIVO - LICENÇA VENDA - BLOQUEADO POR IP + CHAVE
-# USUÁRIO: Dandandan0307 | REPOSITÓRIO: Dansshnetxp
+# SISTEMA DANSSH PRO - PAINEL COMPLETO
+# COM LINKS AUTOMÁTICOS | SEGURO | VENDA
+# FUNÇÕES: SSH, PROXY, XRAY, V2RAY, VLESS, VMESS, TROJAN
 
-# 🔐 AQUI VOCÊ COLOCA OS DADOS DO CLIENTE ANTES DE MANDAR
-# EXEMPLO: CHAVE_VIP="DANSSH-CLIENTE-JOAO-001" | IP_LIBERADO="143.14.79.48"
-CHAVE_VIP="COLOQUE_AQUI_CHAVE_DO_CLIENTE"
-IP_LIBERADO="COLOQUE_AQUI_IP_DA_VPS_DELE"
-
-# CORES
+# ---------------- CORES E VISUAL BONITO ----------------
+ROSA='\033[1;35m'
 VERDE='\033[1;32m'
 VERMELHO='\033[1;31m'
 AZUL='\033[1;34m'
+AMARELO='\033[1;33m'
+CIANO='\033[1;36m'
 RESET='\033[0m'
+
+logo() {
+clear
+echo -e "${ROSA}"
+echo " ██████╗  █████╗ ███╗   ██╗███████╗██╗  ██╗"
+echo "██╔════╝ ██╔══██╗████╗  ██║██╔════╝██║  ██║"
+echo "██║  ███╗███████║██╔██╗ ██║███████╗███████║"
+echo "██║   ██║██╔══██║██║╚██╗██║╚════██║██╔══██║"
+echo "╚██████╔╝██║  ██║██║ ╚████║███████║██║  ██║"
+echo " ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝"
+echo -e "${CIANO}✨ PAINEL DANSSH - VERSÃO PRO ✨${RESET}"
+echo -e "${VERDE}💡 SEMPRE QUE QUISER ENTRAR → DIGITE: danssh${RESET}"
+echo -e "${AZUL}=============================================${RESET}"
+}
 
 # VERIFICA SE É ROOT
 if [ "$(id -u)" -ne 0 ]; then
-    echo -e "${VERMELHO}❌ ERRO: Execute como ROOT!${RESET}"
+    echo -e "${VERMELHO}❌ ERRO: Execute esse comando como ROOT!${RESET}"
     exit 1
 fi
 
-# PEGA O IP ATUAL DA VPS
-IP_ATUAL=$(hostname -I | awk '{print $1}')
-
-# TELA DE LOGIN
-clear
+# MENU PRINCIPAL
+menu_principal() {
+logo
+echo -e "${VERDE}📋 MENU PRINCIPAL - TODAS FUNÇÕES${RESET}"
+echo -e "${AMARELO}1 → INSTALAR SISTEMA COMPLETO${RESET}"
+echo -e "${AMARELO}2 → GERENCIAR USUÁRIOS SSH${RESET}"
+echo -e "${AMARELO}3 → GERENCIAR PROXY HTTP / SOCKS5${RESET}"
+echo -e "${AMARELO}4 → GERENCIAR PORTAS${RESET}"
+echo -e "${AMARELO}5 → CONFIGURAÇÕES SSH${RESET}"
+echo -e "${AMARELO}6 → 🚀 XRAY / V2RAY / VLESS / VMESS${RESET}"
+echo -e "${AMARELO}7 → BLOQUEAR / LIBERAR PAÍSES${RESET}"
+echo -e "${AMARELO}8 → FIREWALL COMPLETO${RESET}"
+echo -e "${AMARELO}9 → TÚNEIS E REDIRECIONAMENTOS${RESET}"
+echo -e "${AMARELO}10 → VER TODAS CONFIGURAÇÕES${RESET}"
+echo -e "${AMARELO}11 → REINICIAR TODOS SERVIÇOS${RESET}"
+echo -e "${AMARELO}12 → SAIR DO PAINEL${RESET}"
 echo -e "${AZUL}=============================================${RESET}"
-echo -e "${VERDE}🔑 PAINEL DANSSH - ACESSO VIP${RESET}"
-echo -e "${AZUL}=============================================${RESET}"
-read -p "Digite sua CHAVE DE ACESSO: " CHAVE_DIGITADA
+read -p "Escolha uma opção: " opcao
 
-# ✅ PRIMEIRA VERIFICAÇÃO: CHAVE CORRETA?
-if [ "$CHAVE_DIGITADA" != "$CHAVE_VIP" ]; then
-    echo -e "${VERMELHO}❌ CHAVE INVÁLIDA! ACESSO NEGADO!${RESET}"
-    exit 1
-fi
+case $opcao in
+    1) instalar_sistema ;;
+    2) menu_usuarios ;;
+    3) menu_proxy ;;
+    4) menu_portas ;;
+    5) menu_ssh ;;
+    6) menu_xray_v2ray ;;
+    7) menu_paises ;;
+    8) menu_firewall ;;
+    9) menu_tuneis ;;
+    10) ver_configuracoes ;;
+    11) reiniciar_servicos ;;
+    12) exit 0 ;;
+    *) echo -e "${VERMELHO}❌ Opção inválida!${RESET}"; sleep 2; menu_principal ;;
+esac
+}
 
-# ✅ SEGUNDA VERIFICAÇÃO: É A VPS AUTORIZADA?
-if [ "$IP_ATUAL" != "$IP_LIBERADO" ]; then
-    echo -e "${VERMELHO}❌ VPS NÃO AUTORIZADA! ESSE ACESSO SÓ FUNCIONA NO IP: $IP_LIBERADO${RESET}"
-    exit 1
-fi
+# INSTALAR TUDO DE UMA VEZ
+instalar_sistema() {
+logo
+echo -e "${AMARELO}🔄 Instalando sistema completo, aguarde...${RESET}"
 
-echo -e "${VERDE}✅ AUTORIZADO! BAIXANDO SISTEMA...${RESET}"
-sleep 1.5
+apt update -y && apt upgrade -y
+apt install -y zip unzip curl wget git ufw mysql-server php8.4-fpm nginx squid openssh-server iptables net-tools geoip-bin uuid-runtime
 
-# BAIXA O SISTEMA PRINCIPAL
-curl -s -o /usr/local/bin/danssh https://raw.githubusercontent.com/Dandandan0307/Dansshnetxp/main/sistema-completo.sh
+systemctl enable --now php8.4-fpm nginx ssh squid
+
+# INSTALAR XRAY E V2RAY
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
+
+# CONFIGURAÇÃO PADRÃO XRAY
+UUID=$(uuidgen)
+mkdir -p /usr/local/etc/xray
+cat > /usr/local/etc/xray/config.json << EOF
+{"log":{"loglevel":"warning"},"inbounds":[{"port":8880,"protocol":"vmess","settings":{"clients":[{"id":"$UUID","alterId":0}]}},{"port":8881,"protocol":"vless","settings":{"clients":[{"id":"$UUID"}],"decryption":"none"}},{"port":8882,"protocol":"trojan","settings":{"clients":[{"password":"$UUID"}]}}],"outbounds":[{"protocol":"freedom"}]}
+EOF
+
+systemctl enable --now xray v2ray
+
+# ABRIR PORTAS NO FIREWALL
+ufw allow 22,80,443,3128,8080,8880,8881,8882/tcp
+ufw --force enable
+
+# CRIAR COMANDO DANSSH PARA SEMPRE
+cp "$0" /usr/local/bin/danssh
 chmod +x /usr/local/bin/danssh
-cp /usr/local/bin/danssh /bin/danssh
+cp "$0" /bin/danssh
 chmod +x /bin/danssh
 
-echo -e "${VERDE}✅ INSTALADO COM SUCESSO!${RESET}"
-echo -e "${CIANO}🔒 LICENÇA VINCULADA AO IP: $IP_ATUAL${RESET}"
-sleep 1
+IP_SERVIDOR=$(hostname -I | awk '{print $1}')
 
-exec danssh
+echo -e "${VERDE}✅ INSTALADO COM SUCESSO!${RESET}"
+echo -e "${CIANO}🔹 IP: $IP_SERVIDOR${RESET}"
+echo -e "${CIANO}🔹 UUID: $UUID${RESET}"
+echo -e "${CIANO}🔹 COMANDO DE ACESSO: danssh${RESET}"
+echo -e "${CIANO}🔗 LINK VMESS: $(echo -n '{"add":"'$IP_SERVIDOR'","aid":"0","id":"'$UUID'","net":"tcp","path":"","port":"8880","ps":"DANSSH-VMESS","scy":"auto","tls":"","type":"none","v":"2"}' | base64 -w 0 | sed 's/^/vmess:\/\//')${RESET}"
+echo -e "${CIANO}🔗 LINK VLESS: vless://$UUID@$IP_SERVIDOR:8881?encryption=none&security=none&type=tcp#DANSSH-VLESS${RESET}"
+echo -e "${CIANO}🔗 LINK TROJAN: trojan://$UUID@$IP_SERVIDOR:8882?security=none&type=tcp#DANSSH-TROJAN${RESET}"
+read -p "Pressione ENTER para voltar..."
+menu_principal
+}
+
+# GERENCIAR USUÁRIOS SSH
+menu_usuarios() {
+logo
+echo -e "${VERDE}👤 GERENCIAR USUÁRIOS SSH${RESET}"
+echo -e "${AMARELO}1 → CRIAR USUÁRIO${RESET}"
+echo -e "${AMARELO}2 → ALTERAR SENHA${RESET}"
+echo -e "${AMARELO}3 → EXCLUIR USUÁRIO${RESET}"
+echo -e "${AMARELO}4 → LISTAR TODOS${RESET}"
+echo -e "${AMARELO}5 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) read -p "Nome: " u; read -p "Senha: " p; useradd -m -s /bin/bash $u; echo "$u:$p"|chpasswd; echo -e "${VERDE}✅ Criado!${RESET}";;
+    2) read -p "Usuário: " u; read -p "Nova senha: " p; echo "$u:$p"|chpasswd;;
+    3) read -p "Usuário: " u; userdel -r $u; echo -e "${VERDE}✅ Excluído!${RESET}";;
+    4) cat /etc/passwd|grep -E 'bash|sh'|cut -d: -f1;;
+esac
+read -p "ENTER..."
+menu_usuarios
+}
+
+# GERENCIAR PROXY
+menu_proxy() {
+logo
+echo -e "${VERDE}🌐 GERENCIAR PROXY${RESET}"
+echo -e "${AMARELO}1 → ATIVAR${RESET}"
+echo -e "${AMARELO}2 → DESATIVAR${RESET}"
+echo -e "${AMARELO}3 → CRIAR USUÁRIO${RESET}"
+echo -e "${AMARELO}4 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) systemctl start squid; ufw allow 3128,8080/tcp; echo -e "${VERDE}✅ Proxy Ativo!${RESET}";;
+    2) systemctl stop squid; echo -e "${VERDE}✅ Proxy Desativado!${RESET}";;
+esac
+read -p "ENTER..."
+menu_proxy
+}
+
+# GERENCIAR PORTAS
+menu_portas() {
+logo
+echo -e "${VERDE}🔌 GERENCIAR PORTAS${RESET}"
+echo -e "${AMARELO}1 → ABRIR PORTA${RESET}"
+echo -e "${AMARELO}2 → FECHAR PORTA${RESET}"
+echo -e "${AMARELO}3 → VER PORTAS ABERTAS${RESET}"
+echo -e "${AMARELO}4 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) read -p "Porta: " p; ufw allow $p/tcp;;
+    2) read -p "Porta: " p; ufw delete allow $p/tcp;;
+    3) ufw status numbered;;
+esac
+read -p "ENTER..."
+menu_portas
+}
+
+# CONFIGURAÇÕES SSH
+menu_ssh() {
+logo
+echo -e "${VERDE}⚙️ CONFIGURAÇÕES SSH${RESET}"
+echo -e "${AMARELO}1 → ALTERAR PORTA${RESET}"
+echo -e "${AMARELO}2 → VER PORTA ATUAL${RESET}"
+echo -e "${AMARELO}3 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) read -p "Nova porta: " p; sed -i "s/^Port .*/Port $p/" /etc/ssh/sshd_config; ufw allow $p/tcp; systemctl restart ssh;;
+    2) grep "^Port " /etc/ssh/sshd_config|awk '{print $2}';;
+esac
+read -p "ENTER..."
+menu_ssh
+}
+
+# GERENCIAR XRAY / V2RAY (AQUI É A MUDANÇA PRINCIPAL)
+menu_xray_v2ray() {
+logo
+echo -e "${VERDE}🚀 XRAY / V2RAY${RESET}"
+echo -e "${AMARELO}1 → STATUS${RESET}"
+echo -e "${AMARELO}2 → CRIAR NOVO USUÁRIO (UUID + LINKS PRONTOS)${RESET}"
+echo -e "${AMARELO}3 → VER DADOS E LINHAS${RESET}"
+echo -e "${AMARELO}4 → REINICIAR${RESET}"
+echo -e "${AMARELO}5 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) echo -e "XRAY: $(systemctl is-active xray) | V2RAY: $(systemctl is-active v2ray)";;
+    2)
+        NOVO_UUID=$(uuidgen)
+        IP_ATUAL=$(hostname -I | awk '{print $1}')
+        sed -i "s/\"id\": \"[^\"]*\"/\"id\": \"$NOVO_UUID\"/g" /usr/local/etc/xray/config.json
+        sed -i "s/\"password\": \"[^\"]*\"/\"password\": \"$NOVO_UUID\"/g" /usr/local/etc/xray/config.json
+        systemctl restart xray
+        echo -e "${VERDE}✅ NOVO USUÁRIO CRIADO!${RESET}"
+        echo -e "${CIANO}🔹 IP: $IP_ATUAL${RESET}"
+        echo -e "${CIANO}🔹 UUID: $NOVO_UUID${RESET}"
+        echo -e "${CIANO}🔗 VMESS → $(echo -n '{"add":"'$IP_ATUAL'","aid":"0","id":"'$NOVO_UUID'","net":"tcp","path":"","port":"8880","ps":"DANSSH-VMESS","scy":"auto","tls":"","type":"none","v":"2"}' | base64 -w 0 | sed 's/^/vmess:\/\//')${RESET}"
+        echo -e "${CIANO}🔗 VLESS → vless://$NOVO_UUID@$IP_ATUAL:8881?encryption=none&security=none&type=tcp#DANSSH-VLESS${RESET}"
+        echo -e "${CIANO}🔗 TROJAN → trojan://$NOVO_UUID@$IP_ATUAL:8882?security=none&type=tcp#DANSSH-TROJAN${RESET}"
+        ;;
+    3)
+        IP_ATUAL=$(hostname -I | awk '{print $1}')
+        UUID_ATUAL=$(grep -o '"id": "[^"]*"' /usr/local/etc/xray/config.json | head -n1 | cut -d'"' -f4)
+        echo -e "${CIANO}🔹 IP: $IP_ATUAL${RESET}"
+        echo -e "${CIANO}🔹 UUID: $UUID_ATUAL${RESET}"
+        echo -e "${CIANO}🔗 VMESS → $(echo -n '{"add":"'$IP_ATUAL'","aid":"0","id":"'$UUID_ATUAL'","net":"tcp","path":"","port":"8880","ps":"DANSSH-VMESS","scy":"auto","tls":"","type":"none","v":"2"}' | base64 -w 0 | sed 's/^/vmess:\/\//')${RESET}"
+        echo -e "${CIANO}🔗 VLESS → vless://$UUID_ATUAL@$IP_ATUAL:8881?encryption=none&security=none&type=tcp#DANSSH-VLESS${RESET}"
+        echo -e "${CIANO}🔗 TROJAN → trojan://$UUID_ATUAL@$IP_ATUAL:8882?security=none&type=tcp#DANSSH-TROJAN${RESET}"
+        ;;
+    4) systemctl restart xray v2ray;;
+esac
+read -p "ENTER..."
+menu_xray_v2ray
+}
+
+# BLOQUEAR PAÍSES
+menu_paises() {
+logo
+echo -e "${VERDE}🌍 BLOQUEAR / LIBERAR PAÍSES${RESET}"
+echo -e "${AMARELO}1 → BLOQUEAR PAÍS${RESET}"
+echo -e "${AMARELO}2 → LIBERAR PAÍS${RESET}"
+echo -e "${AMARELO}3 → SÓ BRASIL FICA LIVRE${RESET}"
+echo -e "${AMARELO}4 → LIMPAR TUDO${RESET}"
+echo -e "${AMARELO}5 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) read -p "Código ex: BR, US, CN: " c; iptables -A INPUT -m geoip --src-cc $c -j DROP;;
+    2) read -p "Código: " c; iptables -D INPUT -m geoip --src-cc $c -j DROP;;
+    3) iptables -F; iptables -A INPUT -m geoip ! --src-cc BR -j DROP;;
+    4) iptables -F;;
+esac
+read -p "ENTER..."
+menu_paises
+}
+
+# FIREWALL
+menu_firewall() {
+logo
+echo -e "${VERDE}🔥 REGRAS DE FIREWALL${RESET}"
+echo -e "${AMARELO}1 → MODO SEGURO${RESET}"
+echo -e "${AMARELO}2 → LIBERAR TUDO${RESET}"
+echo -e "${AMARELO}3 → BLOQUEAR UM IP${RESET}"
+echo -e "${AMARELO}4 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) ufw reset; ufw default deny incoming; ufw allow 22,80,443,3128,8880,8881,8882/tcp; ufw --force enable;;
+    2) ufw reset; ufw default allow all; ufw --force enable;;
+    3) read -p "IP: " ip; ufw deny from $ip;;
+esac
+read -p "ENTER..."
+menu_firewall
+}
+
+# TÚNEIS
+menu_tuneis() {
+logo
+echo -e "${VERDE}🔁 TÚNEIS E REDIRECIONAMENTOS${RESET}"
+echo -e "${AMARELO}1 → REDIRECIONAR PORTA${RESET}"
+echo -e "${AMARELO}2 → VOLTAR${RESET}"
+read -p "Escolha: " op
+case $op in
+    1) read -p "Porta entrada: " p1; read -p "Porta saída: " p2; iptables -t nat -A PREROUTING -p tcp --dport $p1 -j REDIRECT --to-port $p2;;
+esac
+read -p "ENTER..."
+menu_tuneis
+}
+
+# VER CONFIGURAÇÕES
+ver_configuracoes() {
+logo
+echo -e "${VERDE}📋 TODAS CONFIGURAÇÕES${RESET}"
+echo -e "IP: $(hostname -I|awk '{print $1}')"
+echo -e "SSH Porta: $(grep ^Port /etc/ssh/sshd_config|awk '{print $2}')"
+echo -e "Portas Abertas: $(ufw status|grep ALLOW|awk '{print $1}')"
+read -p "ENTER..."
+menu_principal
+}
+
+# REINICIAR SERVIÇOS
+reiniciar_servicos() {
+logo
+echo -e "${AMARELO}🔄 Reiniciando...${RESET}"
+systemctl restart ssh nginx squid xray v2ray ufw
+echo -e "${VERDE}✅ Pronto!${RESET}"
+read -p "ENTER..."
+menu_principal
+}
+
+# INICIAR O SISTEMA
+menu_principal
